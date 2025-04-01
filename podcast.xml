@@ -10,12 +10,26 @@
         <generator>python-feedgen</generator>
         <language>en</language>
         <lastBuildDate>Tue, 01 Apr 2025 02:17:47 +0000</lastBuildDate>
+        <itunes:author>My Podcast Host</itunes:author>
+        <itunes:explicit>false</itunes:explicit>
+        <itunes:image href="https://mypodcast.com/images/cover.jpg" />
+        <itunes:category text="Technology" />
+        <itunes:owner>
+            <itunes:name>My Podcast Host</itunes:name>
+            <itunes:email>host@mypodcast.com</itunes:email>
+        </itunes:owner>
+        <atom:link href="https://mypodcast.com/feed.xml" rel="self" type="application/rss+xml" />
         <item>
             <title>Episode 1</title>
             <description>Description</description>
-            <pubDate>Tue, 02 Oct 2016 19:45:01</pubDate>
-            <guid isPermaLink="false">1</guid>
+            <pubDate>Tue, 02 Oct 2016 19:45:01 +0000</pubDate>
+            <guid isPermaLink="false">episode-1</guid>
             <enclosure url="https://mypodcast.com/audio/ep1.mp3" length="12345678" type="audio/mpeg" />
+            <itunes:title>Episode 1</itunes:title>
+            <itunes:summary>Description</itunes:summary>
+            <itunes:duration>3600</itunes:duration>
+            <itunes:episode>1</itunes:episode>
+            <itunes:episodeType>full</itunes:episodeType>
         </item>
     </channel>
 </rss>
