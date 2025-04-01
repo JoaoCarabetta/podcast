@@ -38,30 +38,70 @@ async def upload_file(
     if not os.path.exists(path):
         return ActionResult(error=f"File {path} does not exist")
 
-    dom_el = await browser.get_dom_element_by_index(index)
-
-    file_upload_dom_el = dom_el.get_file_upload_element()
-    print(file_upload_dom_el)
-
-    if file_upload_dom_el is None:
-        msg = f"AA No file upload element found at index {index}"
-        print(msg)
-        return ActionResult(error=msg)
-
-    file_upload_el = await browser.get_locate_element(file_upload_dom_el)
-    print()
-    print(file_upload_el)
-
-    if file_upload_el is None:
-        msg = f"BB No file upload element found at index {index}"
-        print(msg)
-        return ActionResult(error=msg)
+    print(f"Uploading file to index {index}")
 
     try:
-        await file_upload_el.set_input_files(path)
+        # Wait for any dynamic content to load
+        await browser.page.wait_for_load_state("networkidle")
+
+        dom_el = await browser.get_dom_element_by_index(index)
+        if dom_el is None:
+            return ActionResult(error=f"No element found at index {index}")
+
+        file_upload_dom_el = dom_el.get_file_upload_element()
+        print("File upload element:", file_upload_dom_el)
+
+        if file_upload_dom_el is None:
+            # Try to find any file input in the page
+            file_input = await browser.page.query_selector('input[type="file"]')
+            if file_input:
+                await file_input.set_input_files(path)
+                msg = f"Successfully uploaded file using direct file input"
+                print(msg)
+                return ActionResult(extracted_content=msg, include_in_memory=True)
+            else:
+                msg = f"No file upload element found at index {index}"
+                print(msg)
+                return ActionResult(error=msg)
+
+        # Try to locate and interact with the element
+        file_upload_el = await browser.get_locate_element(file_upload_dom_el)
+        print("Located element:", file_upload_el)
+
+        if file_upload_el is None:
+            msg = f"Could not locate file upload element at index {index}"
+            print(msg)
+            return ActionResult(error=msg)
+
+        # Try multiple upload methods
+        try:
+            # Method 1: Direct file input
+            await file_upload_el.set_input_files(path)
+        except Exception as e1:
+            print(f"Direct file input failed: {str(e1)}")
+            try:
+                # Method 2: Click and handle file chooser
+                async def handle_file_chooser(dialog):
+                    await dialog.accept([path])
+
+                browser.page.once("filechooser", handle_file_chooser)
+                await file_upload_el.click()
+                await browser.page.wait_for_timeout(
+                    1000
+                )  # Give time for dialog to be handled
+            except Exception as e2:
+                print(f"File chooser method failed: {str(e2)}")
+                return ActionResult(
+                    error=f"All upload methods failed: {str(e1)}, {str(e2)}"
+                )
+
+        # Wait for any upload processing
+        await browser.page.wait_for_load_state("networkidle")
+
         msg = f"Successfully uploaded file to index {index}"
         print(msg)
         return ActionResult(extracted_content=msg, include_in_memory=True)
+
     except Exception as e:
         msg = f"Failed to upload file to index {index}: {str(e)}"
         print(msg)
