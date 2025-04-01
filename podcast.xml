@@ -15,7 +15,9 @@
             <description>Description</description>
             <pubDate>Tue, 02 Oct 2016 19:45:01</pubDate>
             <guid isPermaLink="false">1</guid>
-            <enclosure url="https://mypodcast.com/audio/2025-05-31_IFC_Iplan.wav" length="123458"
+            <enclosure
+                url="https://github.com/JoaoCarabetta/podcast/raw/refs/heads/main/episodes/2025-05-31_IFC_Iplan.wav"
+                length="123458"
                 type="audio/wav" />
         </item>
     </channel>
